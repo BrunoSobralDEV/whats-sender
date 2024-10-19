@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
 import { messageQueue } from '../services/messageQueue';
+import { AppError } from '../utils/AppError';
+
 
 export const sendMessage = async (req: Request, res: Response) => {
   const { phone, message } = req.body
 
   try {
     if (!phone || !message) {
-      throw new Error('Phone and message are required');
+      throw new AppError('Phone and message are required');
     }
     console.log('chegou aqui, controller sendMessage')
     // Formatação do número de telefone
