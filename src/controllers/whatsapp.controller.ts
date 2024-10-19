@@ -3,7 +3,7 @@ import { messageQueue } from '../services/messageQueue';
 import { AppError } from '../utils/AppError';
 
 
-export const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
+export const sendMessageController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { phone, message } = req.body
     if (!phone || !message) {
@@ -11,7 +11,14 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
     }
 
     // Enfileirar a mensagem para ser processada pelo Bull
-    await messageQueue.add({ phone, message });
+    await messageQueue.add({ phone, message }, {
+      attempts: 5, // Número de tentativas
+      backoff: {
+        type: 'fixed', // ou 'exponential'
+        delay: 5000, // Tempo em milissegundos entre as tentativas
+      },
+      delay: 5000,
+    });
 
     res.status(200).json({
       success: true,

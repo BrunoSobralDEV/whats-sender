@@ -14,11 +14,8 @@ export const messageQueue = new Bull('messageQueue', {
 messageQueue.process(async (job) => {
   const { phone, message } = job.data;
 
-  console.log('chegou aqui no worker');
-
   try {
     await whatsappClient.sendMessage(phone, message)
-    console.log(`Message sent to ${phone}: ${message}`);
   } catch (error) {
     console.error(`Erro ao processar a mensagem para ${phone}:`, error);
     throw new AppError(`Erro ao processar a mensagem para ${phone}. ${error}`);
