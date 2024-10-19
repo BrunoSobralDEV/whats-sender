@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: bitnami/postgresql:latest
+    ports:
+      - '5431:5431'
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=wsender
+  
+  redis:
+    image: bitnami/redis:latest
+    ports:
+      - '6380:6380'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"  # Porta para aplicações
+      - "15672:15672" # Porta do painel de gerenciamento
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
