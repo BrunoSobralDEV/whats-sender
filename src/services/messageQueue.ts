@@ -1,6 +1,7 @@
 // services/messageQueue.ts
 import Bull from 'bull';
 import whatsappClient from './whatsappService';
+import { AppError } from '../utils/AppError';
 
 export const messageQueue = new Bull('messageQueue', {
   redis: {
@@ -20,6 +21,6 @@ messageQueue.process(async (job) => {
     console.log(`Message sent to ${phone}: ${message}`);
   } catch (error) {
     console.error(`Erro ao processar a mensagem para ${phone}:`, error);
-    throw new Error(`Erro ao processar a mensagem para ${phone}. ${error}`);
+    throw new AppError(`Erro ao processar a mensagem para ${phone}. ${error}`);
   }
 });
