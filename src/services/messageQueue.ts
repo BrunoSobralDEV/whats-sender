@@ -6,7 +6,7 @@ import { AppError } from '../utils/AppError';
 export const messageQueue = new Bull('messageQueue', {
   redis: {
     host: 'localhost',
-    port: 6379,
+    port: 6380,
   },
 });
 
