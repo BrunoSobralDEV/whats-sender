@@ -39,7 +39,7 @@ class WhatsAppClient {
 
   public async sendMessage(to: string, message: string) {
     if (!this.isClientReady) {
-      throw new AppError('WhatsApp client is not ready yet. Please wait until it is initialized.');
+      throw new AppError('WhatsApp client is not ready yet. Please wait until it is initialized.', 500);
     }
     if (!this.client) {
       throw new AppError('WhatsApp client not initialized');
@@ -50,8 +50,6 @@ class WhatsAppClient {
 
     try {
       await this.client.sendMessage(formattedPhone, message);
-      console.log(`Mensagem enviada para ${formattedPhone}`);
-
     } catch (error) {
       console.error(`Erro ao enviar mensagem para ${formattedPhone}:`, error);
       throw new AppError(`Erro ao enviar mensagem para ${formattedPhone}:`);
@@ -60,7 +58,7 @@ class WhatsAppClient {
 
   public getClient(): Client {
     if (!this.isClientReady) {
-      throw new AppError('WhatsApp client is not ready yet. Please wait until it is initialized.');
+      throw new AppError('WhatsApp client is not ready yet. Please wait until it is initialized.', 500);
     }
     if (!this.client) {
       throw new AppError('WhatsApp client not initialized');

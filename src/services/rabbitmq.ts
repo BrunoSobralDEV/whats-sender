@@ -1,18 +1,19 @@
 import amqp from 'amqplib';
+import { AppError } from '../utils/AppError';
 
 export const publishMessageEvent = async (message: string) => {
-  const connection = await amqp.connect('amqp://localhost');
+  const amqpUrl = process.env.AMQP_URL || 'amqp://localhost';
+  if (!amqpUrl) {
+    throw new AppError('AMQP_URL is not defined in the environment variables', 500);
+  }
+  const connection = await amqp.connect(amqpUrl);
   const channel = await connection.createChannel();
 
   const queue = 'messageQueue';
   await channel.assertQueue(queue, { durable: true });
-console.log('message ==',message);
 
   channel.sendToQueue(queue, Buffer.from(message));
 
-  console.log('Message published to RabbitMQ:', message);
-
-  // Fechar a conexão e o canal após enviar a mensagem
   await channel.close();
   await connection.close();
 };
