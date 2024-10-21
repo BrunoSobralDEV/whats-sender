@@ -67,7 +67,7 @@ This project is a solution for sending messages via WhatsApp, using the whatsapp
    ```
 7. Start project
    ```bash
-   npm run start
+   npm run server
    ```
 8. 📱 Authenticate with WhatsApp
 When the project starts, it will display a QR Code in the console to authenticate WhatsApp. Scan this QR Code with your WhatsApp application to connect.
