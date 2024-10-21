@@ -1,19 +1,30 @@
 import amqp from 'amqplib';
 import { AppError } from '../utils/AppError';
 
-export const publishMessageEvent = async (message: string) => {
+let connection: amqp.Connection;
+let channel: amqp.Channel;
+
+export const initRabbitMQ = async () => {
   const amqpUrl = process.env.AMQP_URL || 'amqp://localhost';
   if (!amqpUrl) {
     throw new AppError('AMQP_URL is not defined in the environment variables', 500);
   }
-  const connection = await amqp.connect(amqpUrl);
-  const channel = await connection.createChannel();
+  
+  try {
+    connection = await amqp.connect(amqpUrl);
+    channel = await connection.createChannel();
+    console.log('RabbitMQ connected successfully');
+  } catch (error) {
+    console.error('Failed to connect to RabbitMQ', error);
+    throw new AppError('Could not connect to RabbitMQ', 500);
+  }
 
-  const queue = 'messageQueue';
-  await channel.assertQueue(queue, { durable: true });
+  return { connection, channel };
+};
 
-  channel.sendToQueue(queue, Buffer.from(message));
-
-  await channel.close();
-  await connection.close();
+export const getRabbitChannel = () => {
+  if (!channel) {
+    throw new AppError('RabbitMQ channel has not been initialized', 500);
+  }
+  return channel;
 };

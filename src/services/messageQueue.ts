@@ -1,6 +1,6 @@
 // services/messageQueue.ts
 import Bull from 'bull';
-import { publishMessageEvent } from './rabbitmq';
+import { publishMessageEvent } from './rabbitPublisher';
 
 export const messageQueue = new Bull('messageQueue', {
   redis: {
@@ -8,11 +8,13 @@ export const messageQueue = new Bull('messageQueue', {
     port: 6380,
   },
   defaultJobOptions: {
-    attempts: 5, 
+    attempts: 5,
     backoff: {
       type: 'exponential',
       delay: 5000,
     },
+    removeOnComplete: true,
+    removeOnFail: false,
   },
 });
 
