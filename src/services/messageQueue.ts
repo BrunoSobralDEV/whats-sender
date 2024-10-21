@@ -1,12 +1,18 @@
 // services/messageQueue.ts
 import Bull from 'bull';
-import whatsappClient from './whatsappService';
-import { AppError } from '../utils/AppError';
+import { publishMessageEvent } from './rabbitmq';
 
 export const messageQueue = new Bull('messageQueue', {
   redis: {
     host: 'localhost',
     port: 6380,
+  },
+  defaultJobOptions: {
+    attempts: 5, 
+    backoff: {
+      type: 'exponential',
+      delay: 5000,
+    },
   },
 });
 
@@ -15,9 +21,10 @@ messageQueue.process(async (job) => {
   const { phone, message } = job.data;
 
   try {
-    await whatsappClient.sendMessage(phone, message)
+    // Publicar no RabbitMQ para notificar o consumidor de que o envio via WhatsApp pode começar
+    await publishMessageEvent(JSON.stringify({ phone, message }));
   } catch (error) {
     console.error(`Erro ao processar a mensagem para ${phone}:`, error);
-    throw new AppError(`Erro ao processar a mensagem para ${phone}. ${error}`);
+    throw new Error(`Erro ao processar a mensagem para ${phone}. ${error}`);
   }
 });
